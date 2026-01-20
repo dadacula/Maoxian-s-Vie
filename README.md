@@ -16,12 +16,23 @@ A delightful iOS app that generates daily journal entries from your dog's perspe
 
 ## 🚀 Getting Started
 
+### 🎭 Demo Mode (No API Key Required!)
+
+Want to try the app without setting up an API key? The app includes a **demo mode** that:
+- ✅ Works immediately without any API configuration
+- ✅ Shows how the UI looks and feels
+- ✅ Generates random sample journal entries
+- ⚠️ **Does NOT analyze your actual photos** (just shows what AI-generated entries look like)
+- 📚 Includes pre-written sample entries you can load
+
+**To use demo mode**: Simply skip the API key setup step below and run the app!
+
 ### Prerequisites
 
 - macOS with Xcode 14+ installed
 - Node.js 18+ and npm/yarn
 - CocoaPods installed (`sudo gem install cocoapods`)
-- Google Gemini API key ([Get one here](https://makersuite.google.com/app/apikey))
+- Google Gemini API key ([Get one here](https://makersuite.google.com/app/apikey)) - **Optional for demo mode**
 
 ### Installation
 
@@ -45,7 +56,9 @@ A delightful iOS app that generates daily journal entries from your dog's perspe
    cd ..
    ```
 
-4. **Configure API Key**
+4. **Configure API Key (Optional - skip for demo mode)**
+
+   For **real AI photo analysis**, create a `.env` file:
    ```bash
    cp .env.example .env
    ```
@@ -54,6 +67,8 @@ A delightful iOS app that generates daily journal entries from your dog's perspe
    ```
    GEMINI_API_KEY=your_actual_api_key_here
    ```
+
+   For **demo mode**, skip this step entirely!
 
 5. **Run the app**
    ```bash
@@ -64,11 +79,22 @@ A delightful iOS app that generates daily journal entries from your dog's perspe
 
 ## 📱 How to Use
 
+### Demo Mode Testing
+1. **Launch the app** - You'll see 小毛线's journal home screen
+2. **Load sample entries** - Tap "📚 加载示例日记" to see pre-made demo journals
+3. **Try generating** - Tap the + button and select any photo
+4. **Demo indicator** - Look for the "🎭 演示模式" banner (shows you're in demo mode)
+5. **Random entries** - Each photo generates a random playful journal (not based on actual photo content)
+
+### Real AI Mode (with API Key)
 1. **Launch the app** - You'll see 小毛线's journal home screen
 2. **Tap the + button** - Choose to take a photo or select from library
 3. **Select a photo** - Pick a photo of your dog
-4. **Generate journal** - Tap "生成日记" and watch AI create an entry
-5. **Read & Save** - Enjoy the journal entry from your dog's perspective!
+4. **Generate journal** - Tap "生成日记" and watch **real AI analyze your photo**
+   - AI looks at your dog's expression, activities, and mood
+   - Generates personalized journal based on what it sees
+   - Takes 2-5 seconds to analyze
+5. **Read & Save** - Enjoy the authentic journal entry from your dog's perspective!
 6. **Browse history** - Swipe through all saved journal entries
 
 ## 🎨 Customization

@@ -12,10 +12,18 @@ import { useFocusEffect } from '@react-navigation/native';
 import { StorageService } from '../services/storage';
 import { JournalEntry } from '../types';
 import { getMoodEmoji, formatDate } from '../utils/imageHelper';
+import { DEMO_ENTRIES } from '../utils/demoData';
 
 export default function HomeScreen({ navigation }: any) {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+
+  const loadDemoData = async () => {
+    for (const entry of DEMO_ENTRIES) {
+      await StorageService.saveJournalEntry(entry);
+    }
+    await loadEntries();
+  };
 
   const loadEntries = async () => {
     const allEntries = await StorageService.getAllJournalEntries();
@@ -64,6 +72,9 @@ export default function HomeScreen({ navigation }: any) {
           <Text style={styles.emptyEmoji}>📸</Text>
           <Text style={styles.emptyText}>还没有日记呢！</Text>
           <Text style={styles.emptySubtext}>拍张照片，让小毛线写下今天的故事吧</Text>
+          <TouchableOpacity style={styles.demoButton} onPress={loadDemoData}>
+            <Text style={styles.demoButtonText}>📚 加载示例日记</Text>
+          </TouchableOpacity>
         </View>
       ) : (
         <FlatList
@@ -191,5 +202,17 @@ const styles = StyleSheet.create({
     fontSize: 32,
     color: 'white',
     fontWeight: '300',
+  },
+  demoButton: {
+    marginTop: 20,
+    backgroundColor: '#FFE4B5',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 12,
+  },
+  demoButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#8B4513',
   },
 });

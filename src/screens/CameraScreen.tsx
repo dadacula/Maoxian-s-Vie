@@ -14,11 +14,13 @@ import { GeminiService } from '../services/gemini';
 import { StorageService } from '../services/storage';
 import { convertImageToBase64 } from '../utils/imageHelper';
 import { JournalEntry } from '../types';
+import { GEMINI_API_KEY } from '@env';
 
 export default function CameraScreen({ navigation }: any) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [generatedEntry, setGeneratedEntry] = useState<string | null>(null);
+  const isDemoMode = !GEMINI_API_KEY || GEMINI_API_KEY === '';
 
   const handleTakePhoto = () => {
     launchCamera(
@@ -106,7 +108,9 @@ export default function CameraScreen({ navigation }: any) {
       console.error('Error generating journal:', error);
       Alert.alert(
         '生成失败',
-        '请确保已设置 Gemini API Key。查看 README 了解如何配置。'
+        isDemoMode
+          ? '演示模式出错。如需使用真实 AI 分析，请在 .env 文件中设置 Gemini API Key。'
+          : '生成失败。请检查网络连接和 API Key 配置。'
       );
     } finally {
       setLoading(false);
@@ -118,6 +122,12 @@ export default function CameraScreen({ navigation }: any) {
       <View style={styles.header}>
         <Text style={styles.title}>📸 新的一天</Text>
         <Text style={styles.subtitle}>拍张照片，让小毛线写日记</Text>
+        {isDemoMode && (
+          <View style={styles.demoBanner}>
+            <Text style={styles.demoText}>🎭 演示模式 (Demo Mode)</Text>
+            <Text style={styles.demoSubtext}>使用模拟AI响应 · 不会真实分析照片</Text>
+          </View>
+        )}
       </View>
 
       {!selectedImage ? (
@@ -264,5 +274,23 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
+  },
+  demoBanner: {
+    marginTop: 12,
+    backgroundColor: '#FFF3CD',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  demoText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#856404',
+  },
+  demoSubtext: {
+    fontSize: 11,
+    color: '#856404',
+    marginTop: 2,
   },
 });
