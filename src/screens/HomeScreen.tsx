@@ -8,11 +8,13 @@ import {
   Image,
   RefreshControl,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import { useFocusEffect } from '@react-navigation/native';
 import { StorageService } from '../services/storage';
 import { JournalEntry } from '../types';
 import { getMoodEmoji, formatDate } from '../utils/imageHelper';
 import { DEMO_ENTRIES } from '../utils/demoData';
+import { getMoodTheme } from '../utils/moodThemes';
 
 export default function HomeScreen({ navigation }: any) {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
@@ -60,20 +62,29 @@ export default function HomeScreen({ navigation }: any) {
     </TouchableOpacity>
   );
 
+  // Get theme based on most recent entry's mood
+  const currentMood = entries.length > 0 ? entries[0].mood : 'happy';
+  const theme = getMoodTheme(currentMood as any);
+
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>🐕 小毛线的日记</Text>
-        <Text style={styles.subtitle}>Little Yarn's Journal</Text>
+    <LinearGradient
+      colors={theme.gradientColors}
+      style={styles.container}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+    >
+      <View style={[styles.header, { backgroundColor: 'transparent' }]}>
+        <Text style={[styles.title, { color: theme.textColor }]}>🐕 小毛线的日记</Text>
+        <Text style={[styles.subtitle, { color: theme.textColor }]}>Little Yarn's Journal</Text>
       </View>
 
       {entries.length === 0 ? (
         <View style={styles.emptyState}>
           <Text style={styles.emptyEmoji}>📸</Text>
-          <Text style={styles.emptyText}>还没有日记呢！</Text>
-          <Text style={styles.emptySubtext}>拍张照片，让小毛线写下今天的故事吧</Text>
-          <TouchableOpacity style={styles.demoButton} onPress={loadDemoData}>
-            <Text style={styles.demoButtonText}>📚 加载示例日记</Text>
+          <Text style={[styles.emptyText, { color: theme.textColor }]}>还没有日记呢！</Text>
+          <Text style={[styles.emptySubtext, { color: theme.textColor }]}>拍张照片，让小毛线写下今天的故事吧</Text>
+          <TouchableOpacity style={[styles.demoButton, { backgroundColor: theme.cardBackground }]} onPress={loadDemoData}>
+            <Text style={[styles.demoButtonText, { color: theme.textColor }]}>📚 加载示例日记</Text>
           </TouchableOpacity>
         </View>
       ) : (
@@ -94,19 +105,17 @@ export default function HomeScreen({ navigation }: any) {
       >
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFF8F0',
   },
   header: {
     padding: 20,
     paddingTop: 60,
-    backgroundColor: '#FFE4B5',
     alignItems: 'center',
   },
   title: {

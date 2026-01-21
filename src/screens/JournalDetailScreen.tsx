@@ -8,9 +8,11 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import { StorageService } from '../services/storage';
 import { JournalEntry } from '../types';
 import { getMoodEmoji, formatDate } from '../utils/imageHelper';
+import { getMoodTheme, getMoodDisplayName } from '../utils/moodThemes';
 
 export default function JournalDetailScreen({ route, navigation }: any) {
   const { entryId } = route.params;
@@ -51,46 +53,54 @@ export default function JournalDetailScreen({ route, navigation }: any) {
     );
   }
 
+  const theme = getMoodTheme(entry.mood as any);
+
   return (
-    <ScrollView style={styles.container}>
-      <Image source={{ uri: entry.photoUri }} style={styles.photo} />
+    <LinearGradient
+      colors={theme.gradientColors}
+      style={styles.container}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+    >
+      <ScrollView>
+        <Image source={{ uri: entry.photoUri }} style={styles.photo} />
 
-      <View style={styles.content}>
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.date}>{formatDate(entry.timestamp)}</Text>
-            <Text style={styles.fullDate}>
-              {new Date(entry.timestamp).toLocaleDateString('zh-CN', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                weekday: 'long',
-              })}
-            </Text>
+        <View style={styles.content}>
+          <View style={styles.header}>
+            <View>
+              <Text style={[styles.date, { color: theme.textColor }]}>{formatDate(entry.timestamp)}</Text>
+              <Text style={[styles.fullDate, { color: theme.textColor }]}>
+                {new Date(entry.timestamp).toLocaleDateString('zh-CN', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  weekday: 'long',
+                })}
+              </Text>
+            </View>
+            <View style={styles.moodContainer}>
+              <Text style={styles.moodEmoji}>{getMoodEmoji(entry.mood)}</Text>
+              <Text style={[styles.moodText, { color: theme.textColor }]}>{getMoodDisplayName(entry.mood as any)}</Text>
+            </View>
           </View>
-          <View style={styles.moodContainer}>
-            <Text style={styles.moodEmoji}>{getMoodEmoji(entry.mood)}</Text>
-            <Text style={styles.moodText}>{entry.mood}</Text>
+
+          <View style={[styles.journalContainer, { backgroundColor: theme.cardBackground }]}>
+            <Text style={styles.journalTitle}>🐕 小毛线的心声</Text>
+            <Text style={styles.journalText}>{entry.content}</Text>
           </View>
-        </View>
 
-        <View style={styles.journalContainer}>
-          <Text style={styles.journalTitle}>🐕 小毛线的心声</Text>
-          <Text style={styles.journalText}>{entry.content}</Text>
+          <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
+            <Text style={styles.deleteButtonText}>删除日记</Text>
+          </TouchableOpacity>
         </View>
-
-        <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-          <Text style={styles.deleteButtonText}>删除日记</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFF8F0',
   },
   photo: {
     width: '100%',

@@ -13,6 +13,10 @@ A delightful iOS app that generates daily journal entries from your dog's perspe
 - 💾 **Journal History**: Save and browse all journal entries
 - 🎨 **Beautiful UI**: Warm, playful design with Chinese and English support
 - 😊 **Mood Detection**: Automatically detects and displays your dog's mood
+- 🎨 **Dynamic Backgrounds**: Textured gradient backgrounds that change based on mood
+  - **Beige gradients** for happy, excited, playful, and curious moods
+  - **Noir (dark) gradients** for tired and mischievous moods
+  - Automatically switches as you browse different journal entries
 
 ## 🚀 Getting Started
 
