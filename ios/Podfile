@@ -11,7 +11,7 @@ target 'XiaoMaoxianJournal' do
     :path => config[:reactNativePath],
     :hermes_enabled => true,
     :fabric_enabled => false,
-    :flipper_configuration => FlipperConfiguration.enabled,
+    :flipper_configuration => FlipperConfiguration.disabled,
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
