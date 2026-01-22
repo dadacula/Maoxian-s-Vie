@@ -7,12 +7,15 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  Dimensions,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { StorageService } from '../services/storage';
 import { JournalEntry } from '../types';
 import { getMoodEmoji, formatDate } from '../utils/imageHelper';
-import { getMoodTheme, getMoodDisplayName } from '../utils/moodThemes';
+import { getMoodDisplayName } from '../utils/moodThemes';
+
+const { width } = Dimensions.get('window');
 
 export default function JournalDetailScreen({ route, navigation }: any) {
   const { entryId } = route.params;
@@ -29,12 +32,12 @@ export default function JournalDetailScreen({ route, navigation }: any) {
 
   const handleDelete = () => {
     Alert.alert(
-      '删除日记',
-      '确定要删除这篇日记吗？',
+      'Delete Entry',
+      'Are you sure you want to delete this journal entry?',
       [
-        { text: '取消', style: 'cancel' },
+        { text: 'Cancel', style: 'cancel' },
         {
-          text: '删除',
+          text: 'Delete',
           style: 'destructive',
           onPress: async () => {
             await StorageService.deleteJournalEntry(entryId);
@@ -48,126 +51,291 @@ export default function JournalDetailScreen({ route, navigation }: any) {
   if (!entry) {
     return (
       <View style={styles.container}>
-        <Text style={styles.errorText}>日记未找到</Text>
+        <Text style={styles.errorText}>Entry not found</Text>
       </View>
     );
   }
 
-  const theme = getMoodTheme(entry.mood as any);
-
   return (
-    <LinearGradient
-      colors={theme.gradientColors}
-      style={styles.container}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-    >
+    <View style={styles.container}>
       <ScrollView>
-        <Image source={{ uri: entry.photoUri }} style={styles.photo} />
+        {/* Hero image */}
+        <View style={styles.imageContainer}>
+          <Image source={{ uri: entry.photoUri }} style={styles.photo} />
+          <LinearGradient
+            colors={['transparent', 'rgba(0,0,0,0.4)']}
+            style={styles.imageGradient}
+          />
+          <View style={styles.imageOverlay}>
+            <Text style={styles.imageDate}>
+              {new Date(entry.timestamp).toLocaleDateString('en-US', {
+                month: 'long',
+                day: 'numeric',
+              })}
+            </Text>
+            <Text style={styles.imageTitle}>The Golden Afternoon</Text>
+          </View>
+        </View>
 
+        {/* Content section */}
         <View style={styles.content}>
-          <View style={styles.header}>
-            <View>
-              <Text style={[styles.date, { color: theme.textColor }]}>{formatDate(entry.timestamp)}</Text>
-              <Text style={[styles.fullDate, { color: theme.textColor }]}>
-                {new Date(entry.timestamp).toLocaleDateString('zh-CN', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                  weekday: 'long',
-                })}
-              </Text>
+          {/* Metadata */}
+          <View style={styles.metadata}>
+            <View style={styles.moodBadge}>
+              <View style={styles.moodPulse} />
+              <Text style={styles.moodLabel}>{getMoodDisplayName(entry.mood as any).toUpperCase()}</Text>
             </View>
-            <View style={styles.moodContainer}>
-              <Text style={styles.moodEmoji}>{getMoodEmoji(entry.mood)}</Text>
-              <Text style={[styles.moodText, { color: theme.textColor }]}>{getMoodDisplayName(entry.mood as any)}</Text>
+            <View style={styles.locationContainer}>
+              <Text style={styles.locationIcon}>📍</Text>
+              <Text style={styles.locationText}>HAMPSTEAD HEATH</Text>
             </View>
           </View>
 
-          <View style={[styles.journalContainer, { backgroundColor: theme.cardBackground }]}>
-            <Text style={styles.journalTitle}>🐕 小毛线的心声</Text>
-            <Text style={styles.journalText}>{entry.content}</Text>
+          {/* English content */}
+          <View style={styles.section}>
+            <Text style={styles.contentText}>
+              {entry.content}
+            </Text>
           </View>
 
-          <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-            <Text style={styles.deleteButtonText}>删除日记</Text>
-          </TouchableOpacity>
+          {/* Divider */}
+          <View style={styles.divider}>
+            <View style={styles.dividerLine} />
+          </View>
+
+          {/* Chinese content (mock - in real app would be translated) */}
+          <View style={styles.section}>
+            <Text style={styles.contentTextChinese}>
+              今日是一场纯粹喜悦的交响乐。人类将那颗金色的球抛向清冷的空气中，那一刻，我仿佛失去了重力。
+            </Text>
+          </View>
+
+          {/* Footer branding */}
+          <View style={styles.footer}>
+            <Text style={styles.footerIcon}>🐾</Text>
+            <Text style={styles.footerText}>LUXE CANINE MEMOIRS</Text>
+          </View>
         </View>
       </ScrollView>
-    </LinearGradient>
+
+      {/* Bottom action bar */}
+      <View style={styles.bottomBar}>
+        <View style={styles.actionBar}>
+          <TouchableOpacity style={styles.actionButton}>
+            <Text style={styles.actionIcon}>♡</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.primaryAction}>
+            <LinearGradient
+              colors={['#D4AF37', '#C5A059']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.primaryActionGradient}
+            >
+              <Text style={styles.primaryActionIcon}>✨</Text>
+              <Text style={styles.primaryActionText}>REFINE STORY</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.actionButton} onPress={handleDelete}>
+            <Text style={styles.actionIcon}>🗑</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#F9F7F2',
+  },
+  imageContainer: {
+    width: '100%',
+    aspectRatio: 4 / 5,
+    position: 'relative',
   },
   photo: {
     width: '100%',
-    height: 400,
+    height: '100%',
+  },
+  imageGradient: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: '40%',
+  },
+  imageOverlay: {
+    position: 'absolute',
+    bottom: 32,
+    left: 32,
+  },
+  imageDate: {
+    fontSize: 10,
+    letterSpacing: 3,
+    color: 'white',
+    opacity: 0.9,
+    marginBottom: 8,
+    fontWeight: '500',
+  },
+  imageTitle: {
+    fontSize: 24,
+    fontStyle: 'italic',
+    color: 'white',
+    fontWeight: '400',
   },
   content: {
-    padding: 20,
+    padding: 32,
   },
-  header: {
+  metadata: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 24,
+    alignItems: 'center',
+    marginBottom: 48,
   },
-  date: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#8B4513',
+  moodBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    backgroundColor: 'rgba(242, 232, 207, 1)',
+    borderRadius: 50,
+    borderWidth: 1,
+    borderColor: 'rgba(212, 175, 55, 0.2)',
+    gap: 12,
   },
-  fullDate: {
+  moodPulse: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#D4AF37',
+  },
+  moodLabel: {
+    fontSize: 11,
+    letterSpacing: 3,
+    color: '#D4AF37',
+    fontWeight: '700',
+  },
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  locationIcon: {
     fontSize: 14,
-    color: '#A0522D',
-    marginTop: 4,
   },
-  moodContainer: {
-    alignItems: 'center',
+  locationText: {
+    fontSize: 11,
+    letterSpacing: 2,
+    color: '#666',
+    fontWeight: '500',
   },
-  moodEmoji: {
-    fontSize: 40,
+  section: {
+    marginBottom: 40,
   },
-  moodText: {
-    fontSize: 12,
-    color: '#A0522D',
-    marginTop: 4,
-  },
-  journalContainer: {
-    backgroundColor: 'white',
-    borderRadius: 16,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  journalTitle: {
+  contentText: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#8B4513',
-    marginBottom: 16,
+    lineHeight: 36,
+    color: '#1C1C1C',
+    fontStyle: 'italic',
+    fontWeight: '300',
   },
-  journalText: {
-    fontSize: 16,
-    lineHeight: 28,
-    color: '#333',
+  divider: {
+    alignItems: 'center',
+    marginVertical: 16,
   },
-  deleteButton: {
-    marginTop: 24,
-    padding: 16,
-    borderRadius: 12,
-    backgroundColor: '#FF4444',
+  dividerLine: {
+    width: 48,
+    height: 1,
+    backgroundColor: 'rgba(212, 175, 55, 0.3)',
+  },
+  contentTextChinese: {
+    fontSize: 18,
+    lineHeight: 32,
+    color: '#666',
+    fontWeight: '300',
+  },
+  footer: {
+    alignItems: 'center',
+    marginTop: 80,
+    opacity: 0.4,
+  },
+  footerIcon: {
+    fontSize: 32,
+    color: '#C5A059',
+    marginBottom: 8,
+  },
+  footerText: {
+    fontSize: 9,
+    letterSpacing: 4,
+    color: '#C5A059',
+    fontWeight: '500',
+  },
+  bottomBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 32,
+    paddingBottom: 40,
+    paddingTop: 16,
+    backgroundColor: 'transparent',
+    pointerEvents: 'none',
+  },
+  actionBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 32,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backdropFilter: 'blur(20px)',
+    borderRadius: 50,
+    paddingHorizontal: 40,
+    paddingVertical: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    shadowColor: 'rgba(0, 0, 0, 0.3)',
+    shadowOffset: { width: 0, height: 20 },
+    shadowOpacity: 1,
+    shadowRadius: 50,
+    pointerEvents: 'auto',
+  },
+  actionButton: {
+    width: 32,
+    height: 32,
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  deleteButtonText: {
-    color: 'white',
+  actionIcon: {
+    fontSize: 20,
+    color: '#666',
+  },
+  primaryAction: {
+    flex: 1,
+    borderRadius: 50,
+    overflow: 'hidden',
+    shadowColor: 'rgba(212, 175, 55, 0.5)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 12,
+  },
+  primaryActionGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    gap: 12,
+  },
+  primaryActionIcon: {
     fontSize: 16,
-    fontWeight: '600',
+  },
+  primaryActionText: {
+    fontSize: 12,
+    letterSpacing: 3,
+    color: 'white',
+    fontWeight: '700',
   },
   errorText: {
     fontSize: 18,
