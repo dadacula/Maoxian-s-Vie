@@ -9,6 +9,7 @@ import {
 import { Logo } from "./HelloWorld/Logo";
 import { Subtitle } from "./HelloWorld/Subtitle";
 import { Title } from "./HelloWorld/Title";
+import { Features } from "./HelloWorld/Features";
 import { z } from "zod";
 import { zColor } from "@remotion/zod-types";
 
@@ -57,7 +58,7 @@ export const HelloWorld: React.FC<z.infer<typeof myCompSchema>> = ({
 
   // A <AbsoluteFill> is just a absolutely positioned <div>!
   return (
-    <AbsoluteFill style={{ backgroundColor: "white" }}>
+    <AbsoluteFill style={{ background: "linear-gradient(135deg, #FAF4ED 0%, #E8D5B7 50%, #F5E6D3 100%)" }}>
       <AbsoluteFill style={{ opacity }}>
         <AbsoluteFill style={{ transform: `translateY(${logoTranslation}px)` }}>
           <Logo logoColor1={logoColor1} logoColor2={logoColor2} />
@@ -69,6 +70,10 @@ export const HelloWorld: React.FC<z.infer<typeof myCompSchema>> = ({
         {/* The subtitle will only enter on the 75th frame. */}
         <Sequence from={75}>
           <Subtitle />
+        </Sequence>
+        {/* Features will enter on the 110th frame. */}
+        <Sequence from={110}>
+          <Features />
         </Sequence>
       </AbsoluteFill>
     </AbsoluteFill>

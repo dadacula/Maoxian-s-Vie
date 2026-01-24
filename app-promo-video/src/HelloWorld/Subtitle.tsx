@@ -4,15 +4,12 @@ import { COLOR_1, FONT_FAMILY } from "./constants";
 
 const subtitle: React.CSSProperties = {
   fontFamily: FONT_FAMILY,
-  fontSize: 40,
+  fontSize: 36,
   textAlign: "center",
   position: "absolute",
-  bottom: 140,
+  bottom: 280,
   width: "100%",
-};
-
-const codeStyle: React.CSSProperties = {
-  color: COLOR_1,
+  lineHeight: 1.5,
 };
 
 export const Subtitle: React.FC = () => {
@@ -20,7 +17,11 @@ export const Subtitle: React.FC = () => {
   const opacity = interpolate(frame, [0, 30], [0, 1]);
   return (
     <div style={{ ...subtitle, opacity }}>
-      Edit <code style={codeStyle}>src/Root.tsx</code> and save to reload.
+      Daily journal entries from your dog's perspective
+      <br />
+      <span style={{ fontSize: 32, color: COLOR_1, marginTop: 10 }}>
+        📸 AI-Powered • 🐕 Playful • 💾 Memorable
+      </span>
     </div>
   );
 };
